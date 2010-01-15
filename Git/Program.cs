@@ -73,6 +73,16 @@ namespace GitSharp.CLI
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
+
+            //Used for MEF debugging purposes only
+            /*PluginManager pluginManager = new PluginManager();
+            Console.WriteLine("Number of Loaded Commands: " + pluginManager.Commands.Count);
+            pluginManager.Setup();
+            Console.WriteLine("Number of Loaded Commands: " + pluginManager.Commands.Count);
+            foreach (var cmd in pluginManager.Commands)
+            {
+                Console.WriteLine("Found Command: " + cmd.Name);
+            }*/
             options = new CmdParserOptionSet()
             {
                 { "complete", "display the complete commands", v => ShowComplete() },    
@@ -181,6 +191,10 @@ namespace GitSharp.CLI
                         // Remove the subcommand from the command line
                         args.RemoveAt(0);
                         cmd.Execute(args.ToArray());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
                     }
                     finally
                     {

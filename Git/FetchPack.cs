@@ -46,11 +46,16 @@ namespace GitSharp.CLI
     [Command(common=true, requiresRepository=true, usage = "")]
     public class Fetchpack : TextBuiltin
     {
-        private FetchpackCommand cmd = new FetchpackCommand();
+        PluginManagerUnique manager = new PluginManagerUnique();
+        private FetchpackCommand cmd = null;
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
+            // Setup MEF support
+            manager.Setup(typeof(FetchpackCommand));
+            cmd = (FetchpackCommand)manager.Command;
+
             cmd.Quiet = false;
 			
             options = new CmdParserOptionSet()
@@ -83,7 +88,7 @@ namespace GitSharp.CLI
             }
             catch (Exception e)            
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
         }
 
@@ -92,10 +97,10 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("Here should be the usage...");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("Here should be the usage...");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
         }
     }

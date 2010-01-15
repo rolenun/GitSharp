@@ -40,9 +40,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
+    [Export(typeof(IGitCommand))]
     public class FilterbranchCommand
         : AbstractCommand
     {
@@ -240,6 +242,14 @@ namespace GitSharp.Commands
         /// 
         /// </summary>
         public bool Force { get; set; }
+
+        #endregion
+
+        #region MEF Implementation
+
+        public override string Name { get { return GetType().Name; } }
+
+        public override string Version { get { return "1.0.0.0"; } }
 
         #endregion
 

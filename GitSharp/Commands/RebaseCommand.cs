@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
-
+    [Export(typeof(IGitCommand))]
     public class RebaseCommand
         : AbstractCommand
     {
@@ -205,6 +206,14 @@ namespace GitSharp.Commands
         /// 
         /// </summary>
         public string Root { get; set; }
+
+        #region MEF Implementation
+
+        public override string Name { get { return GetType().Name; } }
+
+        public override string Version { get { return "1.0.0.0"; } }
+
+        #endregion
 
         public override void Execute()
         {

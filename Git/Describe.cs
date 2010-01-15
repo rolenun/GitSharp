@@ -46,11 +46,15 @@ namespace GitSharp.CLI
     [Command(common=true, requiresRepository=true, usage = "")]
     public class Describe : TextBuiltin
     {
-        private DescribeCommand cmd = new DescribeCommand();
+        PluginManagerUnique manager = new PluginManagerUnique();
+        private DescribeCommand cmd = null;
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
+            // Setup MEF support
+            manager.Setup(typeof(DescribeCommand));
+            cmd = (DescribeCommand)manager.Command;
 
             options = new CmdParserOptionSet()
             {
@@ -82,7 +86,7 @@ namespace GitSharp.CLI
             }
             catch (Exception e)            
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
         }
 
@@ -91,10 +95,10 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("Here should be the usage...");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("Here should be the usage...");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
         }
     }

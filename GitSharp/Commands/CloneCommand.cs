@@ -172,7 +172,15 @@ namespace GitSharp
         /// Create a shallow clone with a history truncated to the specified number of revisions. A shallow repository has a number of limitations (you cannot clone or fetch from it, 
         /// nor push from nor into it), but is adequate if you are only interested in the recent history of a large project with a long history, and would want to send in fixes as patches. 
         /// </summary>
-        public int Depth { get; set; } 
+        public int Depth { get; set; }
+
+        #region MEF Implementation
+
+        public override string Name { get { return GetType().Name; } }
+
+        public override string Version { get { return "1.0.0.0"; } }
+
+        #endregion
 
         /// <summary>
         /// Do it.
@@ -201,18 +209,16 @@ namespace GitSharp
             repo.Config.setBoolean("core", null, "bare", Bare);
             repo.Config.save();
             Repository = new Repository(repo);
+
             if (!Quiet)
             {
                 OutputStream.WriteLine("Initialized empty Git repository in " + repo.Directory.FullName);
                 OutputStream.Flush();
             }
 
-                saveRemote(source);
-                FetchResult r = runFetch();
-                GitSharp.Core.Ref branch = guessHEAD(r);
-                if (!NoCheckout)
-                    doCheckout(branch);
-            }
+            saveRemote(source);
+            
+        }
 
         private void saveRemote(URIish uri)
         {
@@ -225,28 +231,9 @@ namespace GitSharp
             repo.Config.save();
         }
 
-        private FetchResult runFetch()
-        {
-            Transport tn = Transport.Open(Repository._internal_repo, OriginName);
-            FetchResult r;
+        
 
-            try
-            {
-            	if (!Quiet)
-                	r = tn.fetch(new TextProgressMonitor(OutputStream), null);
-            	else
-            		r = tn.fetch(new NullProgressMonitor(),null);
-            }
-            finally
-            {
-                tn.Dispose();
-            }
-
-            showFetchResult(tn, r);
-            return r;
-        }
-
-        private static GitSharp.Core.Ref guessHEAD(FetchResult result)
+        public static GitSharp.Core.Ref GuessHEAD(FetchResult result)
         {
             GitSharp.Core.Ref idHEAD = result.GetAdvertisedRef(Constants.HEAD);
             List<GitSharp.Core.Ref> availableRefs = new List<GitSharp.Core.Ref>();
@@ -270,7 +257,7 @@ namespace GitSharp
             return head;
         }
 
-        private void doCheckout(GitSharp.Core.Ref branch)
+        public void DoCheckout(GitSharp.Core.Ref branch)
         {
             if (branch == null)
                 throw new ArgumentNullException("branch", "Cannot checkout; no HEAD advertised by remote");
@@ -286,6 +273,27 @@ namespace GitSharp
             WorkDirCheckout co = new WorkDirCheckout(repo, repo.WorkingDirectory, index, tree);
             co.checkout();
             index.write();
+        }
+
+        public FetchResult RunFetch(TextWriter writer)
+        {
+            Transport tn = Transport.Open(Repository._internal_repo, OriginName);
+            FetchResult r;
+
+            try
+            {
+                if (!Quiet && writer != null)
+                    r = tn.fetch(new TextProgressMonitor(writer), null);
+                else
+                    r = tn.fetch(new NullProgressMonitor(), null);
+            }
+            finally
+            {
+                tn.Dispose();
+            }
+
+            showFetchResult(tn, r);
+            return r;
         }
     }
 }

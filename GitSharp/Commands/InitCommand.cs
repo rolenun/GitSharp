@@ -40,12 +40,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
     /// <summary>
     /// git-init - Create an empty git repository or reinitialize an existing one 
     /// </summary>
+    [Export(typeof(IGitCommand))]
     public class InitCommand : AbstractCommand
     {
         public InitCommand()
@@ -116,6 +118,14 @@ namespace GitSharp.Commands
 
         #endregion
 
+        #region MEF Implementation
+
+        public override string Name { get { return GetType().Name; } }
+
+        public override string Version { get { return "1.0.0.0"; } }
+
+        #endregion
+
         /// <summary>
         /// Execute the command.
         /// </summary>
@@ -126,11 +136,7 @@ namespace GitSharp.Commands
                 repo.Create(Bare);
                 repo.Config.setBoolean("core", null, "bare", Bare);
                 repo.Config.save();
-                if (!Quiet)
-                {
-                    OutputStream.WriteLine("Initialized empty Git repository in " + repo.Directory.FullName);
-                    OutputStream.Flush();
-                }
+                
                 Repository = new Repository(repo.Directory.FullName);
             }
         }

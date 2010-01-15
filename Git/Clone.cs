@@ -39,7 +39,8 @@
 
 using System;
 using System.Collections.Generic;
-
+using GitSharp.Core.Transport;
+using GitSharp.Commands;
 
 using NDesk.Options;
 
@@ -50,7 +51,8 @@ namespace GitSharp.CLI
     [Command(common=true, requiresRepository=true, usage = "Clone a repository into a new directory")]
     public class Clone : TextBuiltin
     {
-        private CloneCommand cmd = new CloneCommand();
+        PluginManagerUnique manager = new PluginManagerUnique();
+        private CloneCommand cmd = null;
 
         /*
          * private static Boolean isHelp = false;              //Complete        
@@ -71,6 +73,10 @@ namespace GitSharp.CLI
 
         public override void Run(string[] args)
         {
+            // Setup MEF support
+            manager.Setup(typeof(CloneCommand));
+            cmd = (CloneCommand)manager.Command;
+
             cmd.Quiet = false;
 			
             options = new CmdParserOptionSet()
@@ -99,7 +105,13 @@ namespace GitSharp.CLI
                 if (arguments.Count > 0)
                 {
                     cmd.Source = arguments[0];
+                    
                     cmd.Execute();
+
+                    FetchResult r = cmd.RunFetch(OutputStream);
+                    GitSharp.Core.Ref branch = CloneCommand.GuessHEAD(r);
+                    if (!cmd.NoCheckout)
+                        cmd.DoCheckout(branch);
                 }
                 else
                 {
@@ -108,7 +120,7 @@ namespace GitSharp.CLI
             }
             catch (Exception e)            
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
         }
 
@@ -117,10 +129,10 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("usage: git clone [options] [--] <repo> [<dir>]");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("usage: git clone [options] [--] <repo> [<dir>]");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
         }
     }

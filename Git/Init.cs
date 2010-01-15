@@ -47,12 +47,17 @@ namespace GitSharp.CLI
     [Command(common = true, complete = false, usage = "Create an empty git repository")]
     class Init : TextBuiltin
     {
-        private InitCommand cmd = new InitCommand();
+        PluginManagerUnique manager = new PluginManagerUnique();
+        private InitCommand cmd;
 
         private static Boolean isHelp = false;
 
         public override void Run(string[] args)
         {
+            // Setup MEF support
+            manager.Setup(typeof(InitCommand));
+            cmd = (InitCommand)manager.Command;
+
             cmd.Quiet = false; // [henon] the api defines the commands quiet by default. thus we need to override with git's default here.
             
             options = new CmdParserOptionSet
@@ -67,10 +72,16 @@ namespace GitSharp.CLI
             {
                 List<String> arguments = ParseOptions(args);
                 cmd.Execute();
+
+                if (!cmd.Quiet)
+                {
+                    OutputStream.WriteLine("Initialized empty Git repository in " );//+ cmd.Repository.Directory.FullName);
+                    OutputStream.Flush();
+                }
             }
             catch (Exception e)
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
 
         }
@@ -80,10 +91,10 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("usage: git init [options] [directory]");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("usage: git init [options] [directory]");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
         }
         //private void create()

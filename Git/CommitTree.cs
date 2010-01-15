@@ -73,7 +73,7 @@ namespace GitSharp.CLI
             }
             catch (Exception e)            
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
         }
 
@@ -82,10 +82,10 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("Here should be the usage...");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("Here should be the usage...");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
         }
     }

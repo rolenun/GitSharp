@@ -47,10 +47,15 @@ namespace GitSharp.CLI
     [Command(common=true, requiresRepository=true, usage = "")]
     public class Rebase : TextBuiltin
     {
-        private RebaseCommand cmd = new RebaseCommand();
+        PluginManagerUnique manager = new PluginManagerUnique();
+        private RebaseCommand cmd = null;
         private static Boolean isHelp;
         public override void Run(string[] args)
         {
+            // Setup MEF support
+            manager.Setup(typeof(RebaseCommand));
+            cmd = (RebaseCommand)manager.Command;
+
             cmd.Quiet = false;
 			
             options = new CmdParserOptionSet()
@@ -91,7 +96,7 @@ namespace GitSharp.CLI
             }
             catch (Exception e)            
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
         }
 
@@ -100,10 +105,10 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("/*Usage*/");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("/*Usage*/");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
         }
     }

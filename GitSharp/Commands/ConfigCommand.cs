@@ -43,9 +43,11 @@ using System.Linq;
 using System.Text;
 using GitSharp.Core.Transport;
 using GitSharp.Core;
+using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
+    [Export(typeof(IGitCommand))]
     public class ConfigCommand : AbstractCommand
     {
 
@@ -61,6 +63,7 @@ namespace GitSharp.Commands
     	#endregion
     	
     	#region Properties
+
     	public bool Bool { get; set; } 
  		
  		public bool Int { get; set; }
@@ -109,7 +112,15 @@ namespace GitSharp.Commands
  		public bool Edit { get; set; }
  		
  		#endregion
- 		
+
+        #region MEF Implementation
+
+        public override string Name { get { return GetType().Name; } }
+
+        public override string Version { get { return "1.0.0.0"; } }
+
+        #endregion
+
         public override void Execute()
         {
         	if (Add)
@@ -130,8 +141,6 @@ namespace GitSharp.Commands
         		doUnSet(Arg1, Arg2);
  			else if (UnSetAll)
         		doUnSetAll(Arg1, Arg2);
- 			else if (List)
-        		doList();
  			else if (GetColorBool)
         		doGetColorBool(Arg1, Arg2);
  			else if (GetColor)
@@ -146,6 +155,11 @@ namespace GitSharp.Commands
 
         #region Methods
         
+        public GitSharp.Config GetConfigList()
+        { 
+            return new GitSharp.Config(Repository);
+        }
+
         private void doAdd(string name, string value)
         {
         	throw new NotImplementedException();
@@ -191,19 +205,6 @@ namespace GitSharp.Commands
         	throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Displays list of all the variables set in the config file
-        /// </summary>
-       	private void doList()
-        {
-            GitSharp.Config cfg = new GitSharp.Config(Repository);
-            foreach (KeyValuePair<string, string> pair in cfg)
-            {
-                OutputStream.WriteLine(pair.Key + "=" + pair.Value);
-            }
-            OutputStream.Flush();
-        }
-        
 		private void doGetColorBool(string color, string ouputToTerminal)
         {
         	throw new NotImplementedException();

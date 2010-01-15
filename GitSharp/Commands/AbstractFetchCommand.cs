@@ -44,9 +44,9 @@ namespace GitSharp.Commands
     {
         protected bool verbose;
 
-        protected void showFetchResult(GitSharp.Core.Transport.Transport tn, FetchResult r)
+        public void showFetchResult(GitSharp.Core.Transport.Transport tn, FetchResult r)
         {
-            bool shownURI = false;
+            //bool shownURI = false;
             foreach (TrackingRefUpdate u in r.TrackingRefUpdates)
             {
                 if (!verbose && u.Result == RefUpdate.RefUpdateResult.NoChange)
@@ -57,14 +57,14 @@ namespace GitSharp.Commands
                 string src = AbbreviateRef(u.RemoteName, false);
                 string dst = AbbreviateRef(u.LocalName, true);
 
-                if (!shownURI)
-                {
-                    OutputStream.Write("From ");
-                    OutputStream.WriteLine(tn.Uri);
-                    shownURI = true;
-                }
+                //if (!shownURI)
+                //{
+                //    OutputStream.Write("From ");
+                //    OutputStream.WriteLine(tn.Uri);
+                //    shownURI = true;
+                //}
 
-                OutputStream.WriteLine(" " + type + " " + longType + " " + src + " -> " + dst);
+                //OutputStream.WriteLine(" " + type + " " + longType + " " + src + " -> " + dst);
             }
         }
 

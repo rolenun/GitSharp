@@ -46,12 +46,17 @@ namespace GitSharp.CLI
     [Command(common=true, requiresRepository=true, usage = "")]
     public class Blame : TextBuiltin
     {
-        private BlameCommand cmd = new BlameCommand();
+        PluginManagerUnique manager = new PluginManagerUnique();
+        private BlameCommand cmd = null;
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
-		
+
+            // Setup MEF support
+            manager.Setup(typeof(BlameCommand));
+            cmd = (BlameCommand)manager.Command;
+
             options = new CmdParserOptionSet()
             {
                { "h|help", "Display this help information. To see online help, use: git help <command>", v=>OfflineHelp()},
@@ -94,7 +99,7 @@ namespace GitSharp.CLI
             }
             catch (Exception e)            
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
         }
 
@@ -103,10 +108,10 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("Here should be the usage...");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("Here should be the usage...");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
         }
     }

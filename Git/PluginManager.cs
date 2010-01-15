@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009, Stefan Schake <caytchen@gmail.com>
+﻿/*
+ * Copyright (C) 2010, Rolenun <rolenun@gmail.com>
  *
  * All rights reserved.
  *
@@ -35,66 +35,45 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Collections.Generic;
-using GitSharp.Commands;
-using GitSharp.Core;
-using GitSharp.Core.Transport;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.Reflection;
+using GitSharp.Commands;
 
-namespace GitSharp
+namespace GitSharp.CLI
 {
-    [Export(typeof(IGitCommand))]
-    public class FetchCommand : AbstractFetchCommand
+    /// <summary>
+    /// This class provides one example of how a GUI MEF hosting application would
+    /// dynamically load the interfaces on startup to gain access to all of the commands.
+    /// This class is not used by the CLI except for debugging purposes.
+    /// The CLI uses the PluginManagerUnique class.
+    /// </summary>
+    class PluginManager
     {
-        public string Remote { get; set; }
-        public List<RefSpec> RefSpecs { get; set; }
-        public ProgressMonitor ProgressMonitor { get; set; }
+        [ImportMany(typeof(IGitCommand))]
+        private IList<IGitCommand> _commands = new List<IGitCommand>();
 
-        public bool? Prune { get; set; }
-        public bool DryRun { get; set; }
-        public bool? Thin { get; set; }
+        public IList<IGitCommand> Commands { get { return _commands; } }
 
-        public FetchResult Result
+        public PluginManager()
         {
-            get; private set;
         }
-
-        public FetchCommand()
+        
+        public void Setup()
         {
-            Remote = Constants.DEFAULT_REMOTE_NAME;
-            ProgressMonitor = NullProgressMonitor.Instance;
-        }
+            AggregateCatalog catalog = new AggregateCatalog();
+            CompositionContainer container = new CompositionContainer(catalog);
+            CompositionBatch batch = new CompositionBatch();
 
-        #region MEF Implementation
-
-        public override string Name { get { return GetType().Name; } }
-
-        public override string Version { get { return "1.0.0.0"; } }
-
-        #endregion
-
-        public override void Execute()
-        {
-            Transport tn = Transport.Open(Repository._internal_repo, Remote);
-
-            if (Prune != null)
-                tn.RemoveDeletedRefs = Prune.Value;
-            if (Thin != null)
-                tn.FetchThin = Thin.Value;
-            tn.DryRun = DryRun;
-
-            try
-            {
-                Result = tn.fetch(ProgressMonitor, RefSpecs);
-                if (Result.TrackingRefUpdates.Count == 0)
-                    return;
-            }
-            finally
-            {
-                tn.Dispose();
-            }
-            showFetchResult(tn, Result);
+            batch.AddPart(this);
+            
+            //Add all the search paths to the catalog
+            catalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
+            catalog.Catalogs.Add(new DirectoryCatalog(System.Environment.CurrentDirectory));
+            
+            container.Compose(batch);
         }
     }
-
 }

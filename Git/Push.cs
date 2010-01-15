@@ -39,12 +39,15 @@
 using System;
 using System.Collections.Generic;
 using NDesk.Options;
+using GitSharp.Commands;
 
 namespace GitSharp.CLI
 {
     [Command(complete = false, common = true, usage = "Update remote refs along with associated objects")]
     class Push : TextBuiltin
     {
+        PluginManagerUnique manager = new PluginManagerUnique();
+        PushCommand cmd = null;
         private static Boolean isHelp = false;
 
 #if ported
@@ -59,8 +62,13 @@ namespace GitSharp.CLI
         private static string receivePack = "";
 #endif
 
-        override public void Run(String[] args)
+        public override void Run(String[] args)
         {
+
+            // Setup MEF support
+            manager.Setup(typeof(PushCommand));
+            cmd = (PushCommand)manager.Command;
+
             options = new CmdParserOptionSet()
             {
                 { "h|help", "Display this help information. To see online help, use: git help <command>", v=>OfflineHelp()},
@@ -118,7 +126,7 @@ namespace GitSharp.CLI
             }
         }
 
-        private static void OfflineHelp()
+        private void OfflineHelp()
         {
             if (!isHelp)
             {
@@ -129,9 +137,11 @@ namespace GitSharp.CLI
             }
         }
 
-        private static void DoPush(List<String> filesAdded)
+        private void DoPush(List<String> filesAdded)
         {
             Console.WriteLine("This command still needs to be implemented.");
+            if (cmd.EverythingUpToDate)
+                Console.WriteLine("Everything is up-to-date.");
         }
     }
 }

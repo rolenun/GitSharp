@@ -40,9 +40,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
+    [Export(typeof(IGitCommand))]
     public class CatfileCommand
         : AbstractCommand
     {
@@ -105,6 +107,14 @@ namespace GitSharp.Commands
         /// be combined with any other options or arguments.
         /// </summary>
         public bool BatchCheck { get; set; }
+
+        #endregion
+        
+        #region MEF Implementation
+
+        public override string Name { get { return GetType().Name; } }
+
+        public override string Version { get { return "1.0.0.0"; } }
 
         #endregion
 

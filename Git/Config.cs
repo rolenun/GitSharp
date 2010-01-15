@@ -48,13 +48,17 @@ namespace GitSharp.CLI
     [Command(complete=false, common=true, requiresRepository=true, usage = "Get and set repository or global options")]
     public class Config : TextBuiltin
     {
-        private ConfigCommand cmd = new ConfigCommand();
+        PluginManagerUnique manager = new PluginManagerUnique();
+        private ConfigCommand cmd = null;
 
         private static Boolean isHelp = false;
 
         public override void Run(string[] args)
         {
-			
+            // Setup MEF support
+            manager.Setup(typeof(ConfigCommand));
+            cmd = (ConfigCommand)manager.Command;
+
             options = new CmdParserOptionSet()
             {
                 { "h|help", "Display this help information. To see online help, use: git help <command>", v=>OfflineHelp()},
@@ -101,7 +105,7 @@ namespace GitSharp.CLI
                 }
                 else if (cmd.List)
                 {
-                    cmd.Execute();
+                    DoList();
                 }
                 else
                 {
@@ -110,7 +114,7 @@ namespace GitSharp.CLI
             }
             catch (Exception e)            
             {
-                cmd.OutputStream.WriteLine(e.Message);
+                OutputStream.WriteLine(e.Message);
             }
         }
 
@@ -119,11 +123,24 @@ namespace GitSharp.CLI
             if (!isHelp)
             {
                 isHelp = true;
-                cmd.OutputStream.WriteLine("usage: git config [file-option] [options]");
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine("usage: git config [file-option] [options]");
+                OutputStream.WriteLine();
                 options.WriteOptionDescriptions(Console.Out);
-                cmd.OutputStream.WriteLine();
+                OutputStream.WriteLine();
             }
+        }
+
+        /// <summary>
+        /// Displays list of all the variables set in the config file
+        /// </summary>
+        private void DoList()
+        {
+            GitSharp.Config cfg = cmd.GetConfigList();
+            foreach (KeyValuePair<string, string> pair in cfg)
+            {
+                OutputStream.WriteLine(pair.Key + "=" + pair.Value);
+            }
+            OutputStream.Flush();
         }
     }
 }

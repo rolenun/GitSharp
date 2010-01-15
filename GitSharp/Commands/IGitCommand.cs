@@ -44,6 +44,16 @@ namespace GitSharp
 {
     public interface IGitCommand
     {
+        /// <summary>
+        /// Name of the command. Used in the MEF implementation.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Version of the command. Used in the MEF implementation.
+        /// </summary>
+        string Version { get; }
+
         void Execute();
     }
 }

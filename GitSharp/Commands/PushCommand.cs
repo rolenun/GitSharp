@@ -38,14 +38,16 @@
 using System.Collections.Generic;
 using GitSharp.Core;
 using GitSharp.Core.Transport;
+using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
-
+    [Export(typeof(IGitCommand))]
     public class PushCommand : AbstractCommand
     {
         private bool shownUri;
 
+        public bool EverythingUpToDate { get; set; }
         public ProgressMonitor ProgressMonitor { get; set; }
         public string Remote { get; set; }
         public List<RefSpec> RefSpecs { get; set; }
@@ -62,6 +64,7 @@ namespace GitSharp.Commands
 
         public PushCommand()
         {
+            EverythingUpToDate = false;
             Remote = Constants.DEFAULT_REMOTE_NAME;
             ProgressMonitor = NullProgressMonitor.Instance;
         }
@@ -75,6 +78,14 @@ namespace GitSharp.Commands
         {
             RefSpecs.Add(Transport.REFSPEC_TAGS);
         }
+
+        #region MEF Implementation
+
+        public override string Name { get { return GetType().Name; } }
+
+        public override string Version { get { return "1.0.0.0"; } }
+
+        #endregion
 
         public override void Execute()
         {
@@ -113,7 +124,7 @@ namespace GitSharp.Commands
         private void printPushResult(URIish uri, PushResult result)
         {
             shownUri = false;
-            bool everythingUpToDate = true;
+            EverythingUpToDate = true;
 
             foreach (RemoteRefUpdate rru in result.RemoteUpdates)
             {
@@ -124,7 +135,7 @@ namespace GitSharp.Commands
                 }
                 else
                 {
-                    everythingUpToDate = false;
+                    EverythingUpToDate = false;
                 }
             }
 
@@ -140,8 +151,6 @@ namespace GitSharp.Commands
                     printRefUpdateResult(uri, result, rru);
             }
 
-            if (everythingUpToDate)
-                OutputStream.WriteLine("Everything up-to-date");
         }
 
         private void printRefUpdateResult(URIish uri, OperationResult result, RemoteRefUpdate rru)
@@ -149,7 +158,7 @@ namespace GitSharp.Commands
             if (!shownUri)
             {
                 shownUri = true;
-                OutputStream.WriteLine("To " + uri);
+                //OutputStream.WriteLine("To " + uri);
             }
 
             string remoteName = rru.RemoteName;
@@ -219,19 +228,20 @@ namespace GitSharp.Commands
             }
         }
 
-        private void printUpdateLine(char flag, string summary, string srcRef, string destRef, string message)
+        private string printUpdateLine(char flag, string summary, string srcRef, string destRef, string message)
         {
-            OutputStream.Write(" " + flag + " " + summary);
+            string a = " " + flag + " " + summary;
             
             if (srcRef != null)
-                OutputStream.Write(" " + AbbreviateRef(srcRef, true) + " -> ");
-            OutputStream.Write(AbbreviateRef(destRef, true));
+                a += " " + AbbreviateRef(srcRef, true) + " -> ";
+            a += AbbreviateRef(destRef, true);
 
             if (message != null)
-                OutputStream.Write(" (" + message + ")");
+                a += " (" + message + ")";
 
-            OutputStream.WriteLine();
+            a += "\n";
 
+            return a;
         }
     }
 

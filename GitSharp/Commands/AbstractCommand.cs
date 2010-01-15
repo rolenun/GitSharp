@@ -208,6 +208,16 @@ namespace GitSharp.Commands
         /// Execute the git command.
         /// </summary>
         public abstract void Execute();
+        
+        /// <summary>
+        /// Name of the command. Used in the MEF implementation.
+        /// </summary>
+        public abstract string Name { get; }
+
+        /// <summary>
+        /// Version of the command. Used in the MEF implementation.
+        /// </summary>
+        public abstract string Version { get; }
 
     }
 }

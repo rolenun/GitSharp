@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009, Stefan Schake <caytchen@gmail.com>
+﻿/*
+ * Copyright (C) 2010, Rolenun <rolenun@gmail.com>
  *
  * All rights reserved.
  *
@@ -35,66 +35,35 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Collections.Generic;
-using GitSharp.Commands;
-using GitSharp.Core;
-using GitSharp.Core.Transport;
+using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using GitSharp.Commands;
 
-namespace GitSharp
+namespace GitSharp.CLI
 {
-    [Export(typeof(IGitCommand))]
-    public class FetchCommand : AbstractFetchCommand
+    /// <summary>
+    /// Provides access to exactly one plugin that has MEF implemented.
+    /// </summary>
+    class PluginManagerUnique
     {
-        public string Remote { get; set; }
-        public List<RefSpec> RefSpecs { get; set; }
-        public ProgressMonitor ProgressMonitor { get; set; }
+        [Import(typeof(IGitCommand))]
+        public IGitCommand Command { get; set;}
 
-        public bool? Prune { get; set; }
-        public bool DryRun { get; set; }
-        public bool? Thin { get; set; }
-
-        public FetchResult Result
+        public PluginManagerUnique()
         {
-            get; private set;
         }
 
-        public FetchCommand()
+        public void Setup(System.Type type)
         {
-            Remote = Constants.DEFAULT_REMOTE_NAME;
-            ProgressMonitor = NullProgressMonitor.Instance;
-        }
+            TypeCatalog catalog = new TypeCatalog(type);
+            CompositionContainer container = new CompositionContainer(catalog);
+            CompositionBatch batch = new CompositionBatch();
 
-        #region MEF Implementation
+            batch.AddPart(this);
 
-        public override string Name { get { return GetType().Name; } }
-
-        public override string Version { get { return "1.0.0.0"; } }
-
-        #endregion
-
-        public override void Execute()
-        {
-            Transport tn = Transport.Open(Repository._internal_repo, Remote);
-
-            if (Prune != null)
-                tn.RemoveDeletedRefs = Prune.Value;
-            if (Thin != null)
-                tn.FetchThin = Thin.Value;
-            tn.DryRun = DryRun;
-
-            try
-            {
-                Result = tn.fetch(ProgressMonitor, RefSpecs);
-                if (Result.TrackingRefUpdates.Count == 0)
-                    return;
-            }
-            finally
-            {
-                tn.Dispose();
-            }
-            showFetchResult(tn, Result);
+            container.Compose(batch);
+            
         }
     }
-
 }
