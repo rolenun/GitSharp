@@ -40,16 +40,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
-    [Export(typeof(IGitCommand))]
-    public class CheckoutindexCommand
+    public class GcCommand
         : AbstractCommand
     {
 
-        public CheckoutindexCommand() {
+        public GcCommand() {
         }
 
         // note: the naming of command parameters is not following .NET conventions in favour of git command line parameter naming conventions.
@@ -59,101 +57,64 @@ namespace GitSharp.Commands
         /// <summary>
         /// Not implemented
         /// 
-        /// update stat information for the checked out entries in
-        /// the index file.
+        /// Usually 'git-gc' runs very quickly while providing good disk
+        /// space utilization and performance.  This option will cause
+        /// 'git-gc' to more aggressively optimize the repository at the expense
+        /// of taking much more time.  The effects of this optimization are
+        /// persistent, so this option only needs to be used occasionally; every
+        /// few hundred changesets or so.
         /// 
         /// </summary>
-        public bool Index { get; set; }
+        public bool Aggressive { get; set; }
 
         /// <summary>
         /// Not implemented
         /// 
-        /// be quiet if files exist or are not in the index
+        /// With this option, 'git-gc' checks whether any housekeeping is
+        /// required; if not, it exits without performing any work.
+        /// Some git commands run `git gc --auto` after performing
+        /// operations that could create many loose objects.
+        /// +
+        /// Housekeeping is required if there are too many loose objects or
+        /// too many packs in the repository. If the number of loose objects
+        /// exceeds the value of the `gc.auto` configuration variable, then
+        /// all loose objects are combined into a single pack using
+        /// 'git-repack -d -l'.  Setting the value of `gc.auto` to 0
+        /// disables automatic packing of loose objects.
+        /// +
+        /// If the number of packs exceeds the value of `gc.autopacklimit`,
+        /// then existing packs (except those marked with a `.keep` file)
+        /// are consolidated into a single pack by using the `-A` option of
+        /// 'git-repack'. Setting `gc.autopacklimit` to 0 disables
+        /// automatic consolidation of packs.
         /// 
+        /// </summary>
+        public bool Auto { get; set; }
+
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Prune loose objects older than date (default is 2 weeks ago,
+        /// overridable by the config variable `gc.pruneExpire`).  This
+        /// option is on by default.
+        /// 
+        /// </summary>
+        public string Prune { get; set; }
+
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Do not prune any loose objects.
+        /// 
+        /// </summary>
+        public bool NoPrune { get; set; }
+
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Suppress all progress reports.
         /// </summary>
         public bool Quiet { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// forces overwrite of existing files
-        /// 
-        /// </summary>
-        public bool Force { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// checks out all files in the index.  Cannot be used
-        /// together with explicit filenames.
-        /// 
-        /// </summary>
-        public bool All { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Don't checkout new files, only refresh files already checked
-        /// out.
-        /// 
-        /// </summary>
-        public bool NoCreate { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// When creating files, prepend &lt;string&gt; (usually a directory
-        /// including a trailing /)
-        /// 
-        /// </summary>
-        public string Prefix { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of checking out unmerged entries, copy out the
-        /// files from named stage. &lt;number&gt; must be between 1 and 3.
-        /// Note: --stage=all automatically implies --temp.
-        /// 
-        /// </summary>
-        public string Stage { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of copying the files to the working directory
-        /// write the content to temporary files.  The temporary name
-        /// associations will be written to stdout.
-        /// 
-        /// </summary>
-        public bool Temp { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of taking list of paths from the command line,
-        /// read list of paths from the standard input.  Paths are
-        /// separated by LF (i.e. one path per line) by default.
-        /// 
-        /// </summary>
-        public bool Stdin { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Only meaningful with `--stdin`; paths are separated with
-        /// NUL character instead of LF.
-        /// 
-        /// </summary>
-        public bool Z { get; set; }
-
-        #endregion
-
-        #region MEF Implementation
-
-        public override string Name { get { return GetType().Name; } }
-
-        public override string Version { get { return "1.0.0.0"; } }
 
         #endregion
 

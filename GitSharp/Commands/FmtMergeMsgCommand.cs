@@ -96,7 +96,7 @@ namespace GitSharp.Commands
         /// <summary>
         /// Not implemented
         /// 
-        /// Take the list of merged objects from <file> instead of
+        /// Take the list of merged objects from &lt;file&gt; instead of
         /// stdin.
         /// </summary>
         public string File { get; set; }

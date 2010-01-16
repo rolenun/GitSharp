@@ -40,16 +40,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
-    [Export(typeof(IGitCommand))]
-    public class CheckoutindexCommand
+    public class IndexpackCommand
         : AbstractCommand
     {
 
-        public CheckoutindexCommand() {
+        public IndexpackCommand() {
         }
 
         // note: the naming of command parameters is not following .NET conventions in favour of git command line parameter naming conventions.
@@ -59,81 +57,35 @@ namespace GitSharp.Commands
         /// <summary>
         /// Not implemented
         /// 
-        /// update stat information for the checked out entries in
-        /// the index file.
+        /// Be verbose about what is going on, including progress status.
         /// 
         /// </summary>
-        public bool Index { get; set; }
+        public bool V { get; set; }
 
         /// <summary>
         /// Not implemented
         /// 
-        /// be quiet if files exist or are not in the index
+        /// Write the generated pack index into the specified
+        /// file.  Without this option the name of pack index
+        /// file is constructed from the name of packed archive
+        /// file by replacing .pack with .idx (and the program
+        /// fails if the name of packed archive does not end
+        /// with .pack).
         /// 
         /// </summary>
-        public bool Quiet { get; set; }
+        public string O { get; set; }
 
         /// <summary>
         /// Not implemented
         /// 
-        /// forces overwrite of existing files
-        /// 
-        /// </summary>
-        public bool Force { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// checks out all files in the index.  Cannot be used
-        /// together with explicit filenames.
-        /// 
-        /// </summary>
-        public bool All { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Don't checkout new files, only refresh files already checked
-        /// out.
-        /// 
-        /// </summary>
-        public bool NoCreate { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// When creating files, prepend &lt;string&gt; (usually a directory
-        /// including a trailing /)
-        /// 
-        /// </summary>
-        public string Prefix { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of checking out unmerged entries, copy out the
-        /// files from named stage. &lt;number&gt; must be between 1 and 3.
-        /// Note: --stage=all automatically implies --temp.
-        /// 
-        /// </summary>
-        public string Stage { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of copying the files to the working directory
-        /// write the content to temporary files.  The temporary name
-        /// associations will be written to stdout.
-        /// 
-        /// </summary>
-        public bool Temp { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of taking list of paths from the command line,
-        /// read list of paths from the standard input.  Paths are
-        /// separated by LF (i.e. one path per line) by default.
+        /// When this flag is provided, the pack is read from stdin
+        /// instead and a copy is then written to &lt;pack-file&gt;. If
+        /// &lt;pack-file&gt; is not specified, the pack is written to
+        /// objects/pack/ directory of the current git repository with
+        /// a default name determined from the pack content.  If
+        /// &lt;pack-file&gt; is not specified consider using --keep to
+        /// prevent a race condition between this process and
+        /// 'git-repack'.
         /// 
         /// </summary>
         public bool Stdin { get; set; }
@@ -141,19 +93,60 @@ namespace GitSharp.Commands
         /// <summary>
         /// Not implemented
         /// 
-        /// Only meaningful with `--stdin`; paths are separated with
-        /// NUL character instead of LF.
+        /// It is possible for 'git-pack-objects' to build
+        /// "thin" pack, which records objects in deltified form based on
+        /// objects not included in the pack to reduce network traffic.
+        /// Those objects are expected to be present on the receiving end
+        /// and they must be included in the pack for that pack to be self
+        /// contained and indexable. Without this option any attempt to
+        /// index a thin pack will fail. This option only makes sense in
+        /// conjunction with --stdin.
         /// 
         /// </summary>
-        public bool Z { get; set; }
+        public bool FixThin { get; set; }
 
-        #endregion
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Before moving the index into its final destination
+        /// create an empty .keep file for the associated pack file.
+        /// This option is usually necessary with --stdin to prevent a
+        /// simultaneous 'git-repack' process from deleting
+        /// the newly constructed pack and index before refs can be
+        /// updated to use objects contained in the pack.
+        /// 
+        /// </summary>
+        public bool Keep { get; set; }
 
-        #region MEF Implementation
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Like --keep create a .keep file before moving the index into
+        /// its final destination, but rather than creating an empty file
+        /// place 'why' followed by an LF into the .keep file.  The 'why'
+        /// message can later be searched for within all .keep files to
+        /// locate any which have outlived their usefulness.
+        /// 
+        /// </summary>
+        public string KeepMsg { get; set; }
 
-        public override string Name { get { return GetType().Name; } }
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// This is intended to be used by the test suite only. It allows
+        /// to force the version for the generated pack index, and to force
+        /// 64-bit index entries on objects located above the given offset.
+        /// 
+        /// </summary>
+        public string IndexVersion { get; set; }
 
-        public override string Version { get { return "1.0.0.0"; } }
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Die, if the pack contains broken objects or links.
+        /// 
+        /// </summary>
+        public bool Strict { get; set; }
 
         #endregion
 

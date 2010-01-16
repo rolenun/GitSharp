@@ -40,16 +40,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.ComponentModel.Composition;
 
 namespace GitSharp.Commands
 {
-    [Export(typeof(IGitCommand))]
-    public class CheckoutindexCommand
+    public class HashobjectCommand
         : AbstractCommand
     {
 
-        public CheckoutindexCommand() {
+        public HashobjectCommand() {
         }
 
         // note: the naming of command parameters is not following .NET conventions in favour of git command line parameter naming conventions.
@@ -59,81 +57,23 @@ namespace GitSharp.Commands
         /// <summary>
         /// Not implemented
         /// 
-        /// update stat information for the checked out entries in
-        /// the index file.
+        /// Specify the type (default: "blob").
         /// 
         /// </summary>
-        public bool Index { get; set; }
+        public string T { get; set; }
 
         /// <summary>
         /// Not implemented
         /// 
-        /// be quiet if files exist or are not in the index
+        /// Actually write the object into the object database.
         /// 
         /// </summary>
-        public bool Quiet { get; set; }
+        public bool W { get; set; }
 
         /// <summary>
         /// Not implemented
         /// 
-        /// forces overwrite of existing files
-        /// 
-        /// </summary>
-        public bool Force { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// checks out all files in the index.  Cannot be used
-        /// together with explicit filenames.
-        /// 
-        /// </summary>
-        public bool All { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Don't checkout new files, only refresh files already checked
-        /// out.
-        /// 
-        /// </summary>
-        public bool NoCreate { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// When creating files, prepend &lt;string&gt; (usually a directory
-        /// including a trailing /)
-        /// 
-        /// </summary>
-        public string Prefix { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of checking out unmerged entries, copy out the
-        /// files from named stage. &lt;number&gt; must be between 1 and 3.
-        /// Note: --stage=all automatically implies --temp.
-        /// 
-        /// </summary>
-        public string Stage { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of copying the files to the working directory
-        /// write the content to temporary files.  The temporary name
-        /// associations will be written to stdout.
-        /// 
-        /// </summary>
-        public bool Temp { get; set; }
-
-        /// <summary>
-        /// Not implemented
-        /// 
-        /// Instead of taking list of paths from the command line,
-        /// read list of paths from the standard input.  Paths are
-        /// separated by LF (i.e. one path per line) by default.
+        /// Read the object from standard input instead of from a file.
         /// 
         /// </summary>
         public bool Stdin { get; set; }
@@ -141,19 +81,35 @@ namespace GitSharp.Commands
         /// <summary>
         /// Not implemented
         /// 
-        /// Only meaningful with `--stdin`; paths are separated with
-        /// NUL character instead of LF.
+        /// Read file names from stdin instead of from the command-line.
         /// 
         /// </summary>
-        public bool Z { get; set; }
+        public bool StdinPaths { get; set; }
 
-        #endregion
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Hash object as it were located at the given path. The location of
+        /// file does not directly influence on the hash value, but path is
+        /// used to determine what git filters should be applied to the object
+        /// before it can be placed to the object database, and, as result of
+        /// applying filters, the actual blob put into the object database may
+        /// differ from the given file. This option is mainly useful for hashing
+        /// temporary files located outside of the working directory or files
+        /// read from stdin.
+        /// 
+        /// </summary>
+        public bool Path { get; set; }
 
-        #region MEF Implementation
-
-        public override string Name { get { return GetType().Name; } }
-
-        public override string Version { get { return "1.0.0.0"; } }
+        /// <summary>
+        /// Not implemented
+        /// 
+        /// Hash the contents as is, ignoring any input filter that would
+        /// have been chosen by the attributes mechanism, including crlf
+        /// conversion. If the file is read from standard input then this
+        /// is always implied, unless the --path option is given.
+        /// </summary>
+        public bool NoFilters { get; set; }
 
         #endregion
 
