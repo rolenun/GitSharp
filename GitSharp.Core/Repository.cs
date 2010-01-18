@@ -127,7 +127,7 @@ namespace GitSharp.Core
             {
                 workDir = workTree;
                 if (d == null)
-                    Directory = PathUtil.CombineDirectoryPath(workTree, ".git");
+                    Directory = PathUtil.CombineDirectoryPath(workTree, Constants.DOT_GIT);
                 else
                     Directory = d;
             }
@@ -171,21 +171,17 @@ namespace GitSharp.Core
 
             if (workDir == null)
             {
-                if (d != null)
+                String workTreeConfig = Config.getString("core", null, "worktree");
+                if (workTreeConfig != null)
                 {
-                    // Only read core.worktree if GIT_DIR is set explicitly. See
-                    // git-config(1).
-                    String workTreeConfig = Config.getString("core", null, "worktree");
-                    if (workTreeConfig != null)
-                    {
-                        workDir = (DirectoryInfo)FS.resolve(d, workTreeConfig);
-                    }
-                    else
-                    {
-                        workDir = Directory.Parent;
-                    }
+                    workDir = (DirectoryInfo)FS.resolve(d, workTreeConfig);
+                }
+                else
+                {
+                    workDir = Directory.Parent;
                 }
             }
+
             _refDb = new RefDatabase(this);
             if (objectDir != null)
                 _objectDatabase = new ObjectDirectory(PathUtil.CombineDirectoryPath(objectDir, ""),
@@ -928,10 +924,10 @@ namespace GitSharp.Core
             int usageCount = Interlocked.Decrement(ref _useCnt);
             if (usageCount == 0)
             {
-               if (_objectDatabase != null)
-               {
-                   _objectDatabase.Dispose();
-               }
+                if (_objectDatabase != null)
+                {
+                    _objectDatabase.Dispose();
+                }
 #if DEBUG
                 GC.SuppressFinalize(this); // Disarm lock-release checker
 #endif
@@ -1280,12 +1276,12 @@ namespace GitSharp.Core
         public static Repository Open(DirectoryInfo directory)
         {
             var name = directory.FullName;
-            if (name.EndsWith(".git"))
+            if (name.EndsWith(Constants.DOT_GIT_EXT))
             {
                 return new Repository(directory);
             }
 
-            var subDirectories = directory.GetDirectories(".git");
+            var subDirectories = directory.GetDirectories(Constants.DOT_GIT);
             if (subDirectories.Length > 0)
             {
                 return new Repository(subDirectories[0]);

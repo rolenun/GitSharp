@@ -91,7 +91,7 @@ namespace GitSharp.Commands
                     {
                         while (directory != null)
                         {
-                            gitDir = Path.Combine(directory, ".git");
+                            gitDir = Path.Combine(directory, Constants.DOT_GIT);
                             if (Directory.Exists(gitDir))
                                 return directory;
 
@@ -105,7 +105,7 @@ namespace GitSharp.Commands
                         //Check for bare repositories
                         while (directory != null)
                         {
-                            if (directory.EndsWith(".git") && Directory.Exists(directory))
+                            if (directory.EndsWith(Constants.DOT_GIT_EXT) && Directory.Exists(directory))
                                 return directory;
 
                             //Get parent directory
@@ -115,12 +115,12 @@ namespace GitSharp.Commands
                     }
                 }
             }
-            if (!directory.EndsWith(".git"))
+            if (!directory.EndsWith(Constants.DOT_GIT_EXT))
             {
                 if (!isBare)
-                    directory = Path.Combine(directory, ".git");
+                    directory = Path.Combine(directory, Constants.DOT_GIT);
                 else
-                    directory += ".git";
+                    directory += Constants.DOT_GIT_EXT;
             }
             return directory;
         }
@@ -168,7 +168,7 @@ namespace GitSharp.Commands
                     return Git.DefaultRepository;
                 return _repository;
             }
-            protected set
+            set // <--- for the time being this is public settable. we need to refactor in order to remove the Repository property from Clone and Init
             {
                 _repository = value;
             }

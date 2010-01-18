@@ -45,11 +45,11 @@ using System.ComponentModel.Composition;
 namespace GitSharp.Commands
 {
     [Export(typeof(IGitCommand))]
-    public class FilterbranchCommand
+    public class FilterBranchCommand
         : AbstractCommand
     {
 
-        public FilterbranchCommand() {
+        public FilterBranchCommand() {
         }
 
         // note: the naming of command parameters is not following .NET conventions in favour of git command line parameter naming conventions.

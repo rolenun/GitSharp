@@ -45,11 +45,11 @@ using System.ComponentModel.Composition;
 namespace GitSharp.Commands
 {
     [Export(typeof(IGitCommand))]
-    public class FetchpackCommand
+    public class FetchPackCommand
         : AbstractCommand
     {
 
-        public FetchpackCommand() {
+        public FetchPackCommand() {
         }
 
         // note: the naming of command parameters is not following .NET conventions in favour of git command line parameter naming conventions.

@@ -48,6 +48,7 @@ namespace GitSharp.CLI
     {
         PluginManagerUnique manager = new PluginManagerUnique();
         private CherrypickCommand cmd = null;
+
         private static Boolean isHelp;
 
         public override void Run(string[] args)

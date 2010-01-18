@@ -45,11 +45,11 @@ using System.ComponentModel.Composition;
 namespace GitSharp.Commands
 {
     [Export(typeof(IGitCommand))]
-    public class CommittreeCommand
+    public class CommitTreeCommand
         : AbstractCommand
     {
 
-        public CommittreeCommand() {
+        public CommitTreeCommand() {
         }
 
         // note: the naming of command parameters is not following .NET conventions in favour of git command line parameter naming conventions.
