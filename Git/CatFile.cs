@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Catfile : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private CatfileCommand cmd = null;
+        private CatFileCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(CatfileCommand));
-            cmd = (CatfileCommand)manager.Command;
+            manager.Setup(typeof(CatFileCommand));
+            cmd = (CatFileCommand)manager.Command;
 
             options = new CmdParserOptionSet()
             {

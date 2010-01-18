@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Fetchpack : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private FetchpackCommand cmd = null;
+        private FetchPackCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(FetchpackCommand));
-            cmd = (FetchpackCommand)manager.Command;
+            manager.Setup(typeof(FetchPackCommand));
+            cmd = (FetchPackCommand)manager.Command;
 
             cmd.Quiet = false;
 			

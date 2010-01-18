@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Filterbranch : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private FilterbranchCommand cmd = null;
+        private FilterBranchCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(FilterbranchCommand));
-            cmd = (FilterbranchCommand)manager.Command;
+            manager.Setup(typeof(FilterBranchCommand));
+            cmd = (FilterBranchCommand)manager.Command;
 
             options = new CmdParserOptionSet()
             {

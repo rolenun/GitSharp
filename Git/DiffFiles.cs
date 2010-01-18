@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Difffiles : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private DifffilesCommand cmd = null;
+        private DiffFilesCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(DifffilesCommand));
-            cmd = (DifffilesCommand)manager.Command;
+            manager.Setup(typeof(DiffFilesCommand));
+            cmd = (DiffFilesCommand)manager.Command;
 
             cmd.Quiet = false;
 			

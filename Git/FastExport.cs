@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Fastexport : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private FastexportCommand cmd = null;
+        private FastExportCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(FastexportCommand));
-            cmd = (FastexportCommand)manager.Command;
+            manager.Setup(typeof(FastExportCommand));
+            cmd = (FastExportCommand)manager.Command;
 
             options = new CmdParserOptionSet()
             {

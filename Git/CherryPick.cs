@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Cherrypick : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private CherrypickCommand cmd = null;
+        private CherryPickCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(CherrypickCommand));
-            cmd = (CherrypickCommand)manager.Command;
+            manager.Setup(typeof(CherryPickCommand));
+            cmd = (CherryPickCommand)manager.Command;
 
             options = new CmdParserOptionSet()
             {

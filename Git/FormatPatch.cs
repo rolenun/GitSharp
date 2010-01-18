@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Formatpatch : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private FormatpatchCommand cmd = null;
+        private FormatPatchCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(FormatpatchCommand));
-            cmd = (FormatpatchCommand)manager.Command;
+            manager.Setup(typeof(FormatPatchCommand));
+            cmd = (FormatPatchCommand)manager.Command;
 
             cmd.Quiet = false;
 			

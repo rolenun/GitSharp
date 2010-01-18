@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Difftree : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private DifftreeCommand cmd = null;
+        private DiffTreeCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(DifftreeCommand));
-            cmd = (DifftreeCommand)manager.Command;
+            manager.Setup(typeof(DiffTreeCommand));
+            cmd = (DiffTreeCommand)manager.Command;
 
             cmd.Quiet = false;
 			

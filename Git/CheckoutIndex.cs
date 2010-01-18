@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Checkoutindex : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private CheckoutindexCommand cmd = null;
+        private CheckoutIndexCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(CheckoutindexCommand));
-            cmd = (CheckoutindexCommand)manager.Command;
+            manager.Setup(typeof(CheckoutIndexCommand));
+            cmd = (CheckoutIndexCommand)manager.Command;
 
             cmd.Quiet = false;
 			

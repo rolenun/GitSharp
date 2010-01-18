@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Foreachref : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private ForeachrefCommand cmd = null;
+        private ForEachRefCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(ForeachrefCommand));
-            cmd = (ForeachrefCommand)manager.Command;
+            manager.Setup(typeof(ForEachRefCommand));
+            cmd = (ForEachRefCommand)manager.Command;
 
             options = new CmdParserOptionSet()
             {

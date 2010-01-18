@@ -47,15 +47,15 @@ namespace GitSharp.CLI
     public class Fmtmergemsg : TextBuiltin
     {
         PluginManagerUnique manager = new PluginManagerUnique();
-        private FmtmergemsgCommand cmd = null;
+        private FmtMergeMsgCommand cmd = null;
 
         private static Boolean isHelp;
 
         public override void Run(string[] args)
         {
             // Setup MEF support
-            manager.Setup(typeof(FmtmergemsgCommand));
-            cmd = (FmtmergemsgCommand)manager.Command;
+            manager.Setup(typeof(FmtMergeMsgCommand));
+            cmd = (FmtMergeMsgCommand)manager.Command;
 
             options = new CmdParserOptionSet()
             {
